@@ -1,20 +1,42 @@
 import pickle
 import streamlit as st
 
+# -----------------------------
+# Streamlit Page Configuration
+# -----------------------------
 st.set_page_config(
     page_title="Multiple Disease Prediction System",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+# -----------------------------
+# Hide Streamlit Header and Footer
+# -----------------------------
+hide_st_style = """
+<style>
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+# -----------------------------
+# Load Trained Models
+# -----------------------------
 diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
-
+# -----------------------------
+# App Title
+# -----------------------------
 st.title("🩺 Multiple Disease Prediction System")
 st.caption("**Project under development – results may not be 100% accurate.**")
 
+# -----------------------------
+# Navigation Tabs
+# -----------------------------
 tabs = st.tabs([
     "📘 About Project",
     "🩸 Diabetes Prediction",
@@ -23,6 +45,9 @@ tabs = st.tabs([
     "📰 Blog / Insights"
 ])
 
+# -----------------------------
+# About Project
+# -----------------------------
 with tabs[0]:
     st.write("""
     This web application predicts the likelihood of **Diabetes**, **Heart Disease**, and **Parkinson’s Disease** 
@@ -40,6 +65,9 @@ with tabs[0]:
     - 🧑‍💻 Designed and developed by *Japanjot Singh*
     """)
 
+# -----------------------------
+# Diabetes Prediction Tab
+# -----------------------------
 with tabs[1]:
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -79,6 +107,9 @@ with tabs[1]:
         except ValueError:
             st.error("❌ Please enter valid numeric values only.")
 
+# -----------------------------
+# Heart Disease Prediction Tab
+# -----------------------------
 with tabs[2]:
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -128,6 +159,9 @@ with tabs[2]:
         except ValueError:
             st.error("❌ Please enter valid numeric values only.")
 
+# -----------------------------
+# Parkinson’s Prediction Tab
+# -----------------------------
 with tabs[3]:
     st.caption("Enter values within the given ranges for accurate predictions.")
 
@@ -187,6 +221,9 @@ with tabs[3]:
         except ValueError:
             st.error("❌ Please enter valid numeric values only.")
 
+# -----------------------------
+# Blog / Insights Tab
+# -----------------------------
 with tabs[4]:
     st.info("""
     This section will include:
@@ -196,13 +233,9 @@ with tabs[4]:
     - Research references and external resources  
     """)
 
-    hide_st_style = """
-<style>
-footer {visibility: hidden;}
-header {visibility: hidden;}
-</style>
-"""
-
+# -----------------------------
+# Footer
+# -----------------------------
 st.markdown("""
 <hr style="border: 1px solid #ddd;">
 <p style="text-align:center;">🌐 Designed and Developed by <b>Japanjot Singh</b></p>
