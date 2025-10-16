@@ -21,9 +21,6 @@ body {
     color: #000;
     font-weight: bold;
 }
-.stSidebar {
-    background-color: #f0f0f0;  /* light gray sidebar */
-}
 </style>
 """
 st.markdown(light_theme, unsafe_allow_html=True)
@@ -33,13 +30,11 @@ diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav','rb'))
 parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
-# --------------------------- SIDEBAR NAVIGATION ---------------------------
-st.sidebar.title("Multiple Disease Prediction System")
-choice = st.sidebar.radio("Navigation", ["Diabetes Prediction","Heart Disease Prediction","Parkinsons Prediction"])
-st.sidebar.info("Project is not 100% accurate")
+# --------------------------- TABS NAVIGATION ---------------------------
+tab1, tab2, tab3 = st.tabs(["Diabetes Prediction", "Heart Disease Prediction", "Parkinsons Prediction"])
 
 # --------------------------- DIABETES PAGE ---------------------------
-if choice == 'Diabetes Prediction':
+with tab1:
     st.title('Diabetes Prediction using ML')
     col1, col2, col3 = st.columns(3)
     with col1: Pregnancies = st.text_input('Number of Pregnancies (0-17)')
@@ -65,7 +60,6 @@ if choice == 'Diabetes Prediction':
         except ValueError:
             errors.append("All input values must be numeric.")
 
-        # Min-max warning
         if 'vals' in locals():
             for i, v in enumerate(vals):
                 if v < min_max[i][0] or v > min_max[i][1]:
@@ -78,7 +72,7 @@ if choice == 'Diabetes Prediction':
             st.success("The person is diabetic" if pred==1 else "The person is not diabetic")
 
 # --------------------------- HEART DISEASE PAGE ---------------------------
-if choice == 'Heart Disease Prediction':
+with tab2:
     st.title('Heart Disease Prediction using ML')
     col1, col2, col3 = st.columns(3)
     with col1: age = st.text_input('Age (29-77)')
@@ -120,7 +114,7 @@ if choice == 'Heart Disease Prediction':
             st.success("The person has heart disease" if pred==1 else "The person does not have heart disease")
 
 # --------------------------- PARKINSON'S PAGE ---------------------------
-if choice == "Parkinsons Prediction":
+with tab3:
     st.title("Parkinson's Disease Prediction using ML")
     col1, col2, col3, col4, col5 = st.columns(5)
     parkinsons_fields = {
@@ -145,7 +139,6 @@ if choice == "Parkinsons Prediction":
         try: vals = [float(v) for v in parkinsons_fields.values()]
         except ValueError: errors.append("All input values must be numeric.")
 
-        # Min-max warning (optional realistic ranges)
         parkinsons_ranges = {
             'fo':(88,260),'fhi':(102,592),'flo':(65,239),'Jitter_percent':(0.00168,0.03316),
             'Jitter_Abs':(0.000007,0.00026),'RAP':(0.00068,0.02144),'PPQ':(0.00092,0.01958),
@@ -170,6 +163,7 @@ if choice == "Parkinsons Prediction":
 hide_st_style = """
 <style>
 footer {visibility: hidden;}
+header {visibility: hidden;}
 </style>
 Design and Developed by Japanjot Singh
 """
