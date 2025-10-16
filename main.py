@@ -196,6 +196,13 @@ with tabs[4]:
     - Research references and external resources  
     """)
 
+    hide_st_style = """
+<style>
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+"""
+
 st.markdown("""
 <hr style="border: 1px solid #ddd;">
 <p style="text-align:center;">🌐 Designed and Developed by <b>Japanjot Singh</b></p>
