@@ -170,7 +170,6 @@ if choice == "Parkinsons Prediction":
 hide_st_style = """
 <style>
 footer {visibility: hidden;}
-header {visibility: hidden;}
 </style>
 Design and Developed by Japanjot Singh
 """
