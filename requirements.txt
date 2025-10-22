@@ -3,3 +3,5 @@ pickle-mixin
 streamlit
 pandas
 scikit-learn
+nbformat
+nbconvert
