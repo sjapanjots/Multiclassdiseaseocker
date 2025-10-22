@@ -45,7 +45,8 @@ tabs = st.tabs([
     "🩸 Diabetes Prediction",
     "❤️ Heart Disease Prediction",
     "🧠 Parkinson’s Prediction",
-    "📰 Blog / Insights"
+    "📰 Blog / Insights",
+    "Models"
 ])
 
 # -----------------------------
