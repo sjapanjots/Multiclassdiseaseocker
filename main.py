@@ -36,6 +36,8 @@ parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 # -----------------------------
 st.title("🩺 Multiple Disease Prediction System")
 st.caption("**Project under development – results may not be 100% accurate.**")
+st.set_page_config( page_icon="🧠",)
+
 
 # -----------------------------
 # Navigation Tabs
