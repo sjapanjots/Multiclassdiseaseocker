@@ -1,5 +1,8 @@
 import pickle
 import streamlit as st
+import nbformat
+from nbconvert import HTMLExporter
+import streamlit.components.v1 as components
 
 # -----------------------------
 # Streamlit Page Configuration
@@ -232,6 +235,23 @@ with tabs[4]:
     - Limitations and future improvements  
     - Research references and external resources  
     """)
+
+with tabs[5]:
+    st.title("Code of Trained Models ( Jupyter Notebook )")
+    st.info("This Tab is specifically design to display the Jupyter Notebook containing the code for training the models.")
+
+    notebook_path = "Heart_disease_model.ipynb"
+
+    with open(notebook_path, "r" , encoding="utf-8") as f:
+        notebook_content = nbformat.read(f, as_version=4)
+
+    HTMLExporter = HTMLExporter()
+    HTMLExporter.exclude_input = False
+    html_data, _ = HTMLExporter.from_notebook_node(notebook_content)
+
+    components.html(html_data, height=800, scrolling=True)
+
+
 
 # -----------------------------
 # Footer
