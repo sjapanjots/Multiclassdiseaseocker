@@ -1,5 +1,6 @@
 import pickle
 import streamlit as st
+import pandas as pd
 import nbformat
 from nbconvert import HTMLExporter
 import streamlit.components.v1 as components
@@ -9,6 +10,7 @@ import streamlit.components.v1 as components
 # -----------------------------
 st.set_page_config(
     page_title="Multiple Disease Prediction System",
+    page_icon="🧠",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -27,17 +29,19 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 # -----------------------------
 # Load Trained Models
 # -----------------------------
-diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
+diabetes_model      = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
-parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
+parkinsons_model    = pickle.load(open('parkinsons_model.sav', 'rb'))
+
+burnout_model          = pickle.load(open('burnout_model.pkl', 'rb'))
+burnout_label_encoder  = pickle.load(open('burnout_label_encoder.pkl', 'rb'))
+burnout_feature_cols   = pickle.load(open('burnout_feature_columns.pkl', 'rb'))
 
 # -----------------------------
 # App Title
 # -----------------------------
 st.title("🩺 Multiple Disease Prediction System")
 st.caption("**Project under development – results may not be 100% accurate.**")
-st.set_page_config( page_icon="🧠",)
-
 
 # -----------------------------
 # Navigation Tabs
@@ -46,9 +50,10 @@ tabs = st.tabs([
     "📘 About Project",
     "🩸 Diabetes Prediction",
     "❤️ Heart Disease Prediction",
-    "🧠 Parkinson’s Prediction",
+    "🧠 Parkinson's Prediction",
+    "🔥 Burnout Prediction",
     "📰 Blog / Insights",
-    "🤖Models"
+    "🤖 Models"
 ])
 
 # -----------------------------
@@ -56,8 +61,8 @@ tabs = st.tabs([
 # -----------------------------
 with tabs[0]:
     st.write("""
-    This web application predicts the likelihood of **Diabetes**, **Heart Disease**, and **Parkinson’s Disease** 
-    using pre-trained Machine Learning models.  
+    This web application predicts the likelihood of **Diabetes**, **Heart Disease**, **Parkinson's Disease**,
+    and **Employee Burnout** using pre-trained Machine Learning models.  
     The system demonstrates how AI can assist healthcare professionals by providing early predictions 
     based on medical parameters.  
     However, these predictions are **not diagnostic** and should not replace medical advice.
@@ -65,7 +70,7 @@ with tabs[0]:
     st.markdown("""
     ### Project Highlights
     - 🧩 Built using **Streamlit** and **Scikit-learn**  
-    - 💾 Models saved as `.sav` files for lightweight deployment  
+    - 💾 Models saved as `.sav` / `.pkl` files for lightweight deployment  
     - ⚙️ Backend powered by pre-trained supervised ML models  
     - 🌐 Deployed on Streamlit Cloud  
     - 🧑‍💻 Designed and developed by *Japanjot Singh*
@@ -93,8 +98,6 @@ with tabs[1]:
     with col2:
         Age = st.text_input('Age (21–81)')
 
-    diab_diagnosis = ''
-
     if st.button('🔍 Predict Diabetes'):
         try:
             if not all([Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]):
@@ -103,13 +106,11 @@ with tabs[1]:
                 inputs = [float(Pregnancies), float(Glucose), float(BloodPressure),
                           float(SkinThickness), float(Insulin), float(BMI),
                           float(DiabetesPedigreeFunction), float(Age)]
-
                 diab_prediction = diabetes_model.predict([inputs])
                 if diab_prediction[0] == 1:
-                    diab_diagnosis = '🩸 The person is diabetic.'
+                    st.success('🩸 The person is diabetic.')
                 else:
-                    diab_diagnosis = '✅ The person is not diabetic.'
-                st.success(diab_diagnosis)
+                    st.success('✅ The person is not diabetic.')
         except ValueError:
             st.error("❌ Please enter valid numeric values only.")
 
@@ -145,8 +146,6 @@ with tabs[2]:
     with col1:
         thal = st.text_input('Thal (0–2)')
 
-    heart_diagnosis = ''
-
     if st.button('🔍 Predict Heart Disease'):
         try:
             if not all([age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]):
@@ -155,18 +154,16 @@ with tabs[2]:
                 inputs = [float(age), float(sex), float(cp), float(trestbps), float(chol),
                           float(fbs), float(restecg), float(thalach), float(exang),
                           float(oldpeak), float(slope), float(ca), float(thal)]
-
                 heart_prediction = heart_disease_model.predict([inputs])
                 if heart_prediction[0] == 1:
-                    heart_diagnosis = '❤️ The person has heart disease.'
+                    st.success('❤️ The person has heart disease.')
                 else:
-                    heart_diagnosis = '✅ The person does not have heart disease.'
-                st.success(heart_diagnosis)
+                    st.success('✅ The person does not have heart disease.')
         except ValueError:
             st.error("❌ Please enter valid numeric values only.")
 
 # -----------------------------
-# Parkinson’s Prediction Tab
+# Parkinson's Prediction Tab
 # -----------------------------
 with tabs[3]:
     st.caption("Enter values within the given ranges for accurate predictions.")
@@ -174,63 +171,146 @@ with tabs[3]:
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        fo = st.text_input('MDVP:Fo(Hz) (88–260)')
-        RAP = st.text_input('MDVP:RAP (0.00068–0.02144)')
-        APQ3 = st.text_input('Shimmer:APQ3 (0.01026–0.03134)')
-        HNR = st.text_input('HNR (8.44–33.04)')
-        D2 = st.text_input('D2 (1.42–3.67)')
-
+        fo       = st.text_input('MDVP:Fo(Hz) (88–260)')
+        RAP      = st.text_input('MDVP:RAP (0.00068–0.02144)')
+        APQ3     = st.text_input('Shimmer:APQ3 (0.01026–0.03134)')
+        HNR      = st.text_input('HNR (8.44–33.04)')
+        D2       = st.text_input('D2 (1.42–3.67)')
     with col2:
-        fhi = st.text_input('MDVP:Fhi(Hz) (102–592)')
-        PPQ = st.text_input('MDVP:PPQ (0.00092–0.01958)')
-        APQ5 = st.text_input('Shimmer:APQ5 (0.01161–0.04518)')
-        RPDE = st.text_input('RPDE (0.256–0.685)')
-        PPE = st.text_input('PPE (0.044–0.527)')
-
+        fhi      = st.text_input('MDVP:Fhi(Hz) (102–592)')
+        PPQ      = st.text_input('MDVP:PPQ (0.00092–0.01958)')
+        APQ5     = st.text_input('Shimmer:APQ5 (0.01161–0.04518)')
+        RPDE     = st.text_input('RPDE (0.256–0.685)')
+        PPE      = st.text_input('PPE (0.044–0.527)')
     with col3:
-        flo = st.text_input('MDVP:Flo(Hz) (65–239)')
-        DDP = st.text_input('Jitter:DDP (0.002–0.064)')
-        APQ = st.text_input('MDVP:APQ (0.013–0.043)')
-        DFA = st.text_input('DFA (0.574–0.825)')
-        spread1 = st.text_input('spread1 (-7.96 – -2.43)')
-
+        flo      = st.text_input('MDVP:Flo(Hz) (65–239)')
+        DDP      = st.text_input('Jitter:DDP (0.002–0.064)')
+        APQ      = st.text_input('MDVP:APQ (0.013–0.043)')
+        DFA      = st.text_input('DFA (0.574–0.825)')
+        spread1  = st.text_input('spread1 (-7.96 – -2.43)')
     with col4:
         Jitter_percent = st.text_input('MDVP:Jitter(%) (0.0016–0.033)')
-        Shimmer = st.text_input('MDVP:Shimmer (0.009–0.119)')
-        DDA = st.text_input('Shimmer:DDA (0.013–0.169)')
-        spread2 = st.text_input('spread2 (0.006–0.450)')
-
+        Shimmer        = st.text_input('MDVP:Shimmer (0.009–0.119)')
+        DDA            = st.text_input('Shimmer:DDA (0.013–0.169)')
+        spread2        = st.text_input('spread2 (0.006–0.450)')
     with col5:
-        Jitter_Abs = st.text_input('MDVP:Jitter(Abs) (0.000007–0.00026)')
-        Shimmer_dB = st.text_input('MDVP:Shimmer(dB) (0.085–1.30)')
-        NHR = st.text_input('NHR (0.0006–0.314)')
+        Jitter_Abs  = st.text_input('MDVP:Jitter(Abs) (0.000007–0.00026)')
+        Shimmer_dB  = st.text_input('MDVP:Shimmer(dB) (0.085–1.30)')
+        NHR         = st.text_input('NHR (0.0006–0.314)')
 
-    parkinsons_diagnosis = ''
-
-    if st.button("🔍 Predict Parkinson’s Disease"):
+    if st.button("🔍 Predict Parkinson's Disease"):
         try:
             inputs = [fo, fhi, flo, Jitter_percent, Jitter_Abs, RAP, PPQ, DDP,
                       Shimmer, Shimmer_dB, APQ3, APQ5, APQ, DDA, NHR, HNR,
                       RPDE, DFA, spread1, spread2, D2, PPE]
-
             if not all(inputs):
                 st.error("⚠️ Please fill in all fields before prediction.")
             else:
                 inputs = [float(x) for x in inputs]
                 parkinsons_prediction = parkinsons_model.predict([inputs])
-
                 if parkinsons_prediction[0] == 1:
-                    parkinsons_diagnosis = "🧠 The person has Parkinson’s disease."
+                    st.success("🧠 The person has Parkinson's disease.")
                 else:
-                    parkinsons_diagnosis = "✅ The person does not have Parkinson’s disease."
-                st.success(parkinsons_diagnosis)
+                    st.success("✅ The person does not have Parkinson's disease.")
         except ValueError:
             st.error("❌ Please enter valid numeric values only.")
 
 # -----------------------------
-# Blog / Insights Tab
+# Burnout Prediction Tab
 # -----------------------------
 with tabs[4]:
+    st.subheader("🔥 Employee Mental Health & Burnout Prediction")
+    st.caption("Predicts burnout level as **Low**, **Medium**, or **High** based on work and lifestyle factors.")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        b_age                   = st.text_input('Age (18–65)', key='b_age')
+        b_experience_years      = st.text_input('Experience Years (0–40)', key='b_exp')
+        b_work_hours_per_week   = st.text_input('Work Hours Per Week (20–80)', key='b_wh')
+        b_overtime_hours        = st.text_input('Overtime Hours Per Week (0–30)', key='b_ot')
+        b_meetings_per_day      = st.text_input('Meetings Per Day (0–15)', key='b_meet')
+        b_deadlines_missed      = st.text_input('Deadlines Missed (Per Month) (0–10)', key='b_dl')
+        b_job_satisfaction      = st.text_input('Job Satisfaction (1–10)', key='b_js')
+        b_manager_support       = st.text_input('Manager Support Score (1–10)', key='b_ms')
+
+    with col2:
+        b_work_life_balance     = st.text_input('Work-Life Balance Score (1–10)', key='b_wlb')
+        b_sleep_hours           = st.text_input('Sleep Hours Per Night (3–10)', key='b_sl')
+        b_physical_activity     = st.text_input('Physical Activity Days Per Week (0–7)', key='b_pa')
+        b_screen_time           = st.text_input('Screen Time Hours Per Day (2–16)', key='b_sc')
+        b_caffeine_intake       = st.text_input('Caffeine Intake (cups/day) (0–10)', key='b_caf')
+        b_social_support        = st.text_input('Social Support Score (1–10)', key='b_ss')
+        b_stress_level          = st.text_input('Stress Level (1–10)', key='b_stl')
+        b_anxiety_score         = st.text_input('Anxiety Score (1–10)', key='b_anx')
+
+    with col3:
+        b_depression_score      = st.text_input('Depression Score (1–10)', key='b_dep')
+        b_gender                = st.selectbox('Gender', ['Male', 'Female', 'Non-binary', 'Prefer not to say'], key='b_gen')
+        b_job_role              = st.selectbox('Job Role', [
+                                    'Engineer', 'Manager', 'Analyst', 'Designer',
+                                    'Developer', 'HR', 'Sales', 'Marketing', 'Other'
+                                  ], key='b_jr')
+        b_company_size          = st.selectbox('Company Size', ['Small', 'Medium', 'Large'], key='b_cs')
+        b_work_mode             = st.selectbox('Work Mode', ['Remote', 'Hybrid', 'On-site'], key='b_wm')
+        b_has_therapy           = st.selectbox('Currently in Therapy?', ['Yes', 'No'], key='b_ther')
+
+    if st.button('🔍 Predict Burnout Level'):
+        numeric_fields = {
+            'age': b_age, 'experience_years': b_experience_years,
+            'work_hours_per_week': b_work_hours_per_week, 'overtime_hours': b_overtime_hours,
+            'meetings_per_day': b_meetings_per_day, 'deadlines_missed': b_deadlines_missed,
+            'job_satisfaction': b_job_satisfaction, 'manager_support': b_manager_support,
+            'work_life_balance': b_work_life_balance, 'sleep_hours': b_sleep_hours,
+            'physical_activity_days': b_physical_activity, 'screen_time_hours': b_screen_time,
+            'caffeine_intake': b_caffeine_intake, 'social_support_score': b_social_support,
+            'stress_level': b_stress_level, 'anxiety_score': b_anxiety_score,
+            'depression_score': b_depression_score
+        }
+
+        if not all(numeric_fields.values()):
+            st.error("⚠️ Please fill in all numeric fields before prediction.")
+        else:
+            try:
+                input_dict = {k: float(v) for k, v in numeric_fields.items()}
+
+                # Add categorical fields
+                input_dict['gender']       = b_gender
+                input_dict['job_role']     = b_job_role
+                input_dict['company_size'] = b_company_size
+                input_dict['work_mode']    = b_work_mode
+                input_dict['has_therapy']  = b_has_therapy
+
+                # Build DataFrame in exact training column order
+                input_df = pd.DataFrame([input_dict])[burnout_feature_cols]
+
+                pred_encoded = burnout_model.predict(input_df)[0]
+                pred_label   = burnout_label_encoder.inverse_transform([pred_encoded])[0]
+                pred_proba   = burnout_model.predict_proba(input_df)[0]
+                proba_dict   = dict(zip(burnout_label_encoder.classes_, pred_proba.round(3)))
+
+                # Display result
+                if pred_label == "High":
+                    st.error(f"🔴 Burnout Level: **{pred_label}** — High risk of burnout. Consider seeking professional support.")
+                elif pred_label == "Medium":
+                    st.warning(f"🟡 Burnout Level: **{pred_label}** — Moderate risk. Monitor stress levels and work-life balance.")
+                else:
+                    st.success(f"🟢 Burnout Level: **{pred_label}** — Low risk. Keep maintaining healthy work habits!")
+
+                # Show probability breakdown
+                st.markdown("#### Prediction Confidence")
+                prob_col1, prob_col2, prob_col3 = st.columns(3)
+                prob_col1.metric("🟢 Low",    f"{proba_dict.get('Low', 0)*100:.1f}%")
+                prob_col2.metric("🟡 Medium", f"{proba_dict.get('Medium', 0)*100:.1f}%")
+                prob_col3.metric("🔴 High",   f"{proba_dict.get('High', 0)*100:.1f}%")
+
+            except ValueError:
+                st.error("❌ Please enter valid numeric values only.")
+
+# -----------------------------
+# Blog / Insights Tab
+# -----------------------------
+with tabs[5]:
     st.info("""
     This section will include:
     - Detailed explanation of each ML model  
@@ -239,22 +319,23 @@ with tabs[4]:
     - Research references and external resources  
     """)
 
-with tabs[5]:
+# -----------------------------
+# Models Tab
+# -----------------------------
+with tabs[6]:
     st.title("Code of Trained Models ( Jupyter Notebook )")
-    st.info("This Tab is specifically design to display the Jupyter Notebook containing the code for training the models.")
+    st.info("This Tab is specifically designed to display the Jupyter Notebook containing the code for training the models.")
 
     notebook_path = "Heart_disease_model.ipynb"
 
-    with open(notebook_path, "r" , encoding="utf-8") as f:
+    with open(notebook_path, "r", encoding="utf-8") as f:
         notebook_content = nbformat.read(f, as_version=4)
 
-    HTMLExporter = HTMLExporter()
-    HTMLExporter.exclude_input = False
-    html_data, _ = HTMLExporter.from_notebook_node(notebook_content)
+    html_exporter = HTMLExporter()
+    html_exporter.exclude_input = False
+    html_data, _ = html_exporter.from_notebook_node(notebook_content)
 
     components.html(html_data, height=800, scrolling=True)
-
-
 
 # -----------------------------
 # Footer
