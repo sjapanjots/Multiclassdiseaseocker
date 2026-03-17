@@ -33,9 +33,9 @@ diabetes_model      = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 parkinsons_model    = pickle.load(open('parkinsons_model.sav', 'rb'))
 
-burnout_model          = pickle.load(open('burnout_model.pkl', 'rb'))
-burnout_label_encoder  = pickle.load(open('burnout_label_encoder.pkl', 'rb'))
-burnout_feature_cols   = pickle.load(open('burnout_feature_columns.pkl', 'rb'))
+burnout_model          = pickle.load(open('burnout_model.sav', 'rb'))
+burnout_label_encoder  = pickle.load(open('burnout_label_encoder.sav', 'rb'))
+burnout_feature_cols   = pickle.load(open('burnout_feature_columns.sav', 'rb'))
 
 # -----------------------------
 # App Title
