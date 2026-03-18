@@ -33,9 +33,9 @@ diabetes_model      = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 parkinsons_model    = pickle.load(open('parkinsons_model.sav', 'rb'))
 
-burnout_model          = pickle.load(open('burnout_model.sav', 'rb'))
-burnout_label_encoder  = pickle.load(open('burnout_label_encoder.sav', 'rb'))
-burnout_feature_cols   = pickle.load(open('burnout_feature_columns.sav', 'rb'))
+burnout_model        = pickle.load(open('burnout_model.sav', 'rb'))
+burnout_preprocessing = pickle.load(open('burnout_preprocessing.sav', 'rb'))
+burnout_label_encoder = pickle.load(open('burnout_label_encoder.sav', 'rb'))
 
 # -----------------------------
 # App Title
@@ -273,23 +273,35 @@ with tabs[4]:
         else:
             try:
                 input_dict = {k: float(v) for k, v in numeric_fields.items()}
-
-                # Add categorical fields
                 input_dict['gender']       = b_gender
                 input_dict['job_role']     = b_job_role
                 input_dict['company_size'] = b_company_size
                 input_dict['work_mode']    = b_work_mode
                 input_dict['has_therapy']  = b_has_therapy
 
-                # Build DataFrame in exact training column order
-                input_df = pd.DataFrame([input_dict])[burnout_feature_cols]
+                row = pd.DataFrame([input_dict])
 
-                pred_encoded = burnout_model.predict(input_df)[0]
+                # Apply same categorical encoding used during training
+                for col in burnout_preprocessing["categorical_cols"]:
+                    le = burnout_preprocessing["cat_encoders"][col]
+                    val = str(row[col].iloc[0]) if col in row.columns else "Unknown"
+                    row[col] = le.transform([val])[0] if val in le.classes_ else -1
+
+                # Fill missing numerics and scale
+                for col in burnout_preprocessing["numerical_cols"]:
+                    if row[col].isnull().any():
+                        row[col] = burnout_preprocessing["num_medians"][col]
+                row[burnout_preprocessing["numerical_cols"]] = burnout_preprocessing["scaler"].transform(
+                    row[burnout_preprocessing["numerical_cols"]]
+                )
+
+                X_inf = row[burnout_preprocessing["feature_columns"]].values
+
+                pred_encoded = burnout_model.predict(X_inf)[0]
                 pred_label   = burnout_label_encoder.inverse_transform([pred_encoded])[0]
-                pred_proba   = burnout_model.predict_proba(input_df)[0]
+                pred_proba   = burnout_model.predict_proba(X_inf)[0]
                 proba_dict   = dict(zip(burnout_label_encoder.classes_, pred_proba.round(3)))
 
-                # Display result
                 if pred_label == "High":
                     st.error(f"🔴 Burnout Level: **{pred_label}** — High risk of burnout. Consider seeking professional support.")
                 elif pred_label == "Medium":
@@ -297,7 +309,6 @@ with tabs[4]:
                 else:
                     st.success(f"🟢 Burnout Level: **{pred_label}** — Low risk. Keep maintaining healthy work habits!")
 
-                # Show probability breakdown
                 st.markdown("#### Prediction Confidence")
                 prob_col1, prob_col2, prob_col3 = st.columns(3)
                 prob_col1.metric("🟢 Low",    f"{proba_dict.get('Low', 0)*100:.1f}%")
