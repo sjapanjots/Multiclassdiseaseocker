@@ -268,6 +268,10 @@ with tabs[4]:
             'depression_score': b_depression_score
         }
 
+        # Convert has_therapy Yes/No to 1/0 before passing to scaler
+        has_therapy_val = '1' if b_has_therapy == 'Yes' else '0'
+        numeric_fields['has_therapy'] = has_therapy_val
+
         if not all(numeric_fields.values()):
             st.error("⚠️ Please fill in all numeric fields before prediction.")
         else:
@@ -277,7 +281,6 @@ with tabs[4]:
                 input_dict['job_role']     = b_job_role
                 input_dict['company_size'] = b_company_size
                 input_dict['work_mode']    = b_work_mode
-                input_dict['has_therapy']  = b_has_therapy
 
                 row = pd.DataFrame([input_dict])
 
@@ -315,8 +318,8 @@ with tabs[4]:
                 prob_col2.metric("🟡 Medium", f"{proba_dict.get('Medium', 0)*100:.1f}%")
                 prob_col3.metric("🔴 High",   f"{proba_dict.get('High', 0)*100:.1f}%")
 
-            except ValueError:
-                st.error("❌ Please enter valid numeric values only.")
+            except Exception as e:
+                st.error(f"❌ Prediction failed: {e}")
 
 # -----------------------------
 # Blog / Insights Tab
@@ -350,7 +353,7 @@ with tabs[6]:
 
 # -----------------------------
 # Footer
-# -----------------------------
+# ------------------------
 st.markdown("""
 <hr style="border: 1px solid #ddd;">
 <p style="text-align:center;">🌐 Designed and Developed by <b>Japanjot Singh</b></p>
