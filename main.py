@@ -5,12 +5,9 @@ import nbformat
 from nbconvert import HTMLExporter
 import streamlit.components.v1 as components
 
-# -----------------------------
-# Streamlit Page Configuration
-# -----------------------------
 st.set_page_config(
-    page_title="Multiple Disease Prediction System",
-    page_icon="🧠",
+    page_title="AI Health Prediction Dashboard",
+    page_icon=":material/health_and_safety:",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -21,19 +18,115 @@ st.set_page_config(
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = False
 
+base_css = """
+<style>
+    :root {
+        --accent: #0f9f8f;
+        --accent-2: #d95f59;
+        --panel: rgba(255, 255, 255, 0.88);
+        --line: rgba(16, 24, 40, 0.12);
+        --text-soft: #667085;
+    }
+    .stApp {
+        background:
+            linear-gradient(135deg, rgba(15, 159, 143, 0.10), transparent 34%),
+            linear-gradient(225deg, rgba(217, 95, 89, 0.10), transparent 32%),
+            #f7faf9;
+    }
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2.5rem;
+        max-width: 1220px;
+    }
+    h1, h2, h3 { letter-spacing: 0; }
+    .app-hero {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 1.25rem 1.4rem;
+        background: var(--panel);
+        box-shadow: 0 14px 34px rgba(16, 24, 40, 0.08);
+        margin-bottom: 1rem;
+    }
+    .app-kicker {
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+    }
+    .app-hero h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1.05;
+    }
+    .app-hero p {
+        color: var(--text-soft);
+        margin: 0.65rem 0 0;
+        max-width: 780px;
+        font-size: 1rem;
+    }
+    .section-lead {
+        border-left: 4px solid var(--accent);
+        padding: 0.1rem 0 0.1rem 0.85rem;
+        margin: 0.2rem 0 1rem;
+    }
+    .section-lead h2 {
+        margin: 0 0 0.2rem;
+        font-size: 1.35rem;
+    }
+    .section-lead p {
+        margin: 0;
+        color: var(--text-soft);
+    }
+    div[data-testid="stTabs"] button {
+        border-radius: 8px 8px 0 0;
+        font-weight: 650;
+    }
+    div[data-testid="metric-container"] {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0.85rem;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 8px 22px rgba(16, 24, 40, 0.05);
+    }
+    .stTextInput input, .stNumberInput input { border-radius: 8px; }
+    .stSelectbox div[data-baseweb="select"] > div { border-radius: 8px; }
+    .stButton button {
+        border-radius: 8px;
+        font-weight: 700;
+        border: 1px solid rgba(15, 159, 143, 0.35);
+    }
+    .stButton button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+</style>
+"""
 dark_css = """
 <style>
-    .stApp { background-color: #0e1117; color: #fafafa; }
-    .stTextInput > div > div > input { background-color: #1e2530; color: #fafafa; }
-    .stSelectbox > div > div { background-color: #1e2530; color: #fafafa; }
-    div[data-testid="metric-container"] { background-color: #1e2530; border-radius: 8px; padding: 10px; }
+    :root {
+        --panel: rgba(24, 28, 31, 0.92);
+        --line: rgba(255, 255, 255, 0.13);
+        --text-soft: #b8c0bd;
+    }
+    .stApp {
+        background:
+            linear-gradient(135deg, rgba(15, 159, 143, 0.14), transparent 34%),
+            linear-gradient(225deg, rgba(217, 95, 89, 0.13), transparent 32%),
+            #111514;
+        color: #f7faf9;
+    }
+    .app-hero, div[data-testid="metric-container"] { background: var(--panel); }
+    .stTextInput > div > div > input,
+    .stNumberInput > div > div > input,
+    .stSelectbox > div > div {
+        background-color: #1c2220;
+        color: #f7faf9;
+    }
 </style>
 """
-light_css = """
-<style>
-    div[data-testid="metric-container"] { background-color: #f0f2f6; border-radius: 8px; padding: 10px; }
-</style>
-"""
+light_css = "<style></style>"
 hide_st_style = """
 <style>
 footer {visibility: hidden;}
@@ -41,6 +134,7 @@ header {visibility: hidden;}
 </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+st.markdown(base_css, unsafe_allow_html=True)
 st.markdown(dark_css if st.session_state.dark_mode else light_css, unsafe_allow_html=True)
 
 # -----------------------------
@@ -64,12 +158,18 @@ if "history" not in st.session_state:
 # -----------------------------
 title_col, toggle_col = st.columns([6, 1])
 with title_col:
-    st.title("🩺 Multiple Disease Prediction System")
-    st.caption("**Project under development – results may not be 100% accurate.**")
+    st.markdown("""
+    <div class="app-hero">
+        <div class="app-kicker">Machine learning assistant</div>
+        <h1>AI Health Prediction Dashboard</h1>
+        <p>Run quick prediction checks for diabetes, heart disease, Parkinson's disease, and employee burnout from one focused workspace.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    st.caption("Project under development. Results are informational and should not replace professional medical advice.")
 with toggle_col:
     st.write("")
     st.write("")
-    toggle_label = "🌙 Dark" if not st.session_state.dark_mode else "☀️ Light"
+    toggle_label = "Dark mode" if not st.session_state.dark_mode else "Light mode"
     if st.button(toggle_label):
         st.session_state.dark_mode = not st.session_state.dark_mode
         st.rerun()
@@ -78,20 +178,26 @@ with toggle_col:
 # Navigation Tabs
 # -----------------------------
 tabs = st.tabs([
-    "📘 About Project",
-    "🩸 Diabetes Prediction",
-    "❤️ Heart Disease Prediction",
-    "🧠 Parkinson's Prediction",
-    "🔥 Burnout Prediction",
-    "📋 Prediction History",
-    "📰 Blog / Insights",
-    "🤖 Models"
+    "About",
+    "Diabetes",
+    "Heart Disease",
+    "Parkinson's",
+    "Burnout",
+    "History",
+    "Insights",
+    "Models"
 ])
 
 # -----------------------------
 # About Project
 # -----------------------------
 with tabs[0]:
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Project Overview</h2>
+        <p>A compact Streamlit dashboard for exploring multiple trained prediction models.</p>
+    </div>
+    """, unsafe_allow_html=True)
     st.write("""
     This web application predicts the likelihood of **Diabetes**, **Heart Disease**, **Parkinson's Disease**,
     and **Employee Burnout** using pre-trained Machine Learning models.
@@ -101,18 +207,18 @@ with tabs[0]:
     """)
     st.markdown("""
     ### Project Highlights
-    - 🧩 Built using **Streamlit** and **Scikit-learn**
-    - 💾 Models saved as `.sav` files for lightweight deployment
-    - ⚙️ Backend powered by pre-trained supervised ML models
-    - 🌐 Deployed on Streamlit Cloud
-    - 📋 Prediction history tracking across the session
-    - 🌙 Dark / Light mode toggle
-    - 🧑‍💻 Designed and developed by *Japanjot Singh*
+    - Built using **Streamlit** and **Scikit-learn**
+    - Models saved as `.sav` files for lightweight deployment
+    - Backend powered by pre-trained supervised ML models
+    - Designed for Streamlit Cloud deployment
+    - Prediction history tracking across the session
+    - Dark and light mode support
+    - Designed and developed by *Japanjot Singh*
     """)
 
     # Quick stats from history
     if st.session_state.history:
-        st.markdown("### 📊 Session Stats")
+        st.markdown("### Session Stats")
         sc1, sc2, sc3, sc4 = st.columns(4)
         total = len(st.session_state.history)
         sc1.metric("Total Predictions", total)
@@ -124,8 +230,14 @@ with tabs[0]:
 # Diabetes Prediction Tab
 # -----------------------------
 with tabs[1]:
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Diabetes Prediction</h2>
+        <p>Enter common diagnostic measurements, then run the trained diabetes model.</p>
+    </div>
+    """, unsafe_allow_html=True)
     # Feature 4: BMI Calculator Helper
-    with st.expander("🧮 BMI Calculator — Don't know your BMI? Calculate it here"):
+    with st.expander("BMI Calculator - calculate BMI before filling the form"):
         bmi_col1, bmi_col2, bmi_col3 = st.columns(3)
         with bmi_col1:
             weight_kg = st.number_input("Weight (kg)", min_value=1.0, max_value=300.0, value=70.0, key="bmi_weight")
@@ -144,7 +256,7 @@ with tabs[1]:
                     category = "Overweight"
                 else:
                     category = "Obese"
-                st.success(f"Your BMI: **{bmi_result:.1f}** — {category}. Copy this value into the BMI field below.")
+                st.success(f"Your BMI: **{bmi_result:.1f}** - {category}. Copy this value into the BMI field below.")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -167,10 +279,10 @@ with tabs[1]:
     # Feature 2: Reset button
     btn_col1, btn_col2 = st.columns([1, 5])
     with btn_col1:
-        if st.button('🔍 Predict Diabetes'):
+        if st.button('Predict Diabetes'):
             try:
                 if not all([Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]):
-                    st.error("⚠️ Please fill in all fields before prediction.")
+                    st.error("Please fill in all fields before prediction.")
                 else:
                     inputs = [float(Pregnancies), float(Glucose), float(BloodPressure),
                               float(SkinThickness), float(Insulin), float(BMI),
@@ -178,21 +290,27 @@ with tabs[1]:
                     diab_prediction = diabetes_model.predict([inputs])
                     result = 'Diabetic' if diab_prediction[0] == 1 else 'Not Diabetic'
                     if diab_prediction[0] == 1:
-                        st.success('🩸 The person is diabetic.')
+                        st.success('Prediction result: diabetic.')
                     else:
-                        st.success('✅ The person is not diabetic.')
+                        st.success('Prediction result: not diabetic.')
                     # Feature 1: Log to history
                     st.session_state.history.append({
                         "Disease": "Diabetes", "Result": result,
                         "Inputs": f"Glucose={Glucose}, BMI={BMI}, Age={Age}"
                     })
             except ValueError:
-                st.error("❌ Please enter valid numeric values only.")
+                st.error("Please enter valid numeric values only.")
 
 # -----------------------------
 # Heart Disease Prediction Tab
 # -----------------------------
 with tabs[2]:
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Heart Disease Prediction</h2>
+        <p>Use cardiovascular measurements to estimate heart disease risk.</p>
+    </div>
+    """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1:
         age = st.text_input('Age')
@@ -221,10 +339,10 @@ with tabs[2]:
     with col1:
         thal = st.text_input('Thal (0–2)')
 
-    if st.button('🔍 Predict Heart Disease'):
+    if st.button('Predict Heart Disease'):
         try:
             if not all([age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]):
-                st.error("⚠️ Please fill in all fields before prediction.")
+                st.error("Please fill in all fields before prediction.")
             else:
                 inputs = [float(age), float(sex), float(cp), float(trestbps), float(chol),
                           float(fbs), float(restecg), float(thalach), float(exang),
@@ -232,22 +350,27 @@ with tabs[2]:
                 heart_prediction = heart_disease_model.predict([inputs])
                 result = 'Has Heart Disease' if heart_prediction[0] == 1 else 'No Heart Disease'
                 if heart_prediction[0] == 1:
-                    st.success('❤️ The person has heart disease.')
+                    st.success('Prediction result: heart disease indicated.')
                 else:
-                    st.success('✅ The person does not have heart disease.')
+                    st.success('Prediction result: no heart disease indicated.')
                 # Feature 1: Log to history
                 st.session_state.history.append({
                     "Disease": "Heart Disease", "Result": result,
                     "Inputs": f"Age={age}, Chol={chol}, MaxHR={thalach}"
                 })
         except ValueError:
-            st.error("❌ Please enter valid numeric values only.")
+            st.error("Please enter valid numeric values only.")
 
 # -----------------------------
 # Parkinson's Prediction Tab
 # -----------------------------
 with tabs[3]:
-    st.caption("Enter values within the given ranges for accurate predictions.")
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Parkinson's Prediction</h2>
+        <p>Provide voice measurement values within the displayed ranges.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
@@ -278,35 +401,39 @@ with tabs[3]:
         Shimmer_dB  = st.text_input('MDVP:Shimmer(dB) (0.085–1.30)')
         NHR         = st.text_input('NHR (0.0006–0.314)')
 
-    if st.button("🔍 Predict Parkinson's Disease"):
+    if st.button("Predict Parkinson's Disease"):
         try:
             inputs = [fo, fhi, flo, Jitter_percent, Jitter_Abs, RAP, PPQ, DDP,
                       Shimmer, Shimmer_dB, APQ3, APQ5, APQ, DDA, NHR, HNR,
                       RPDE, DFA, spread1, spread2, D2, PPE]
             if not all(inputs):
-                st.error("⚠️ Please fill in all fields before prediction.")
+                st.error("Please fill in all fields before prediction.")
             else:
                 inputs = [float(x) for x in inputs]
                 parkinsons_prediction = parkinsons_model.predict([inputs])
                 result = "Has Parkinson's" if parkinsons_prediction[0] == 1 else "No Parkinson's"
                 if parkinsons_prediction[0] == 1:
-                    st.success("🧠 The person has Parkinson's disease.")
+                    st.success("Prediction result: Parkinson's disease indicated.")
                 else:
-                    st.success("✅ The person does not have Parkinson's disease.")
+                    st.success("Prediction result: no Parkinson's disease indicated.")
                 # Feature 1: Log to history
                 st.session_state.history.append({
                     "Disease": "Parkinson's", "Result": result,
                     "Inputs": f"Fo={fo}, HNR={HNR}, PPE={PPE}"
                 })
         except ValueError:
-            st.error("❌ Please enter valid numeric values only.")
+            st.error("Please enter valid numeric values only.")
 
 # -----------------------------
 # Burnout Prediction Tab
 # -----------------------------
 with tabs[4]:
-    st.subheader("🔥 Employee Mental Health & Burnout Prediction")
-    st.caption("Predicts burnout level as **Low**, **Medium**, or **High** based on work and lifestyle factors.")
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Employee Burnout Prediction</h2>
+        <p>Predict low, medium, or high burnout risk from workplace and lifestyle signals.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -338,7 +465,7 @@ with tabs[4]:
         b_work_mode           = st.selectbox('Work Mode', ['Remote', 'Hybrid', 'On-site'], key='b_wm')
         b_has_therapy         = st.selectbox('Currently in Therapy?', ['Yes', 'No'], key='b_ther')
 
-    if st.button('🔍 Predict Burnout Level'):
+    if st.button('Predict Burnout Level'):
         numeric_fields = {
             'age': b_age, 'experience_years': b_experience_years,
             'work_hours_per_week': b_work_hours_per_week, 'overtime_hours': b_overtime_hours,
@@ -354,10 +481,10 @@ with tabs[4]:
         numeric_fields['has_therapy'] = has_therapy_val
 
         if not all(numeric_fields.values()):
-            st.error("⚠️ Please fill in all numeric fields before prediction.")
+            st.error("Please fill in all numeric fields before prediction.")
         else:
             try:
-                input_dict = {k: float(v) for k, v in numeric_fields.items()}
+                input_dict: dict[str, float | str] = {k: float(v) for k, v in numeric_fields.items()}
                 input_dict['gender']       = b_gender
                 input_dict['job_role']     = b_job_role
                 input_dict['company_size'] = b_company_size
@@ -384,11 +511,11 @@ with tabs[4]:
                 proba_dict   = dict(zip(burnout_label_encoder.classes_, pred_proba.round(3)))
 
                 if pred_label == "High":
-                    st.error(f"🔴 Burnout Level: **{pred_label}** — High risk. Consider seeking professional support.")
+                    st.error(f"Burnout Level: **{pred_label}** - High risk. Consider seeking professional support.")
                 elif pred_label == "Medium":
-                    st.warning(f"🟡 Burnout Level: **{pred_label}** — Moderate risk. Monitor stress and work-life balance.")
+                    st.warning(f"Burnout Level: **{pred_label}** - Moderate risk. Monitor stress and work-life balance.")
                 else:
-                    st.success(f"🟢 Burnout Level: **{pred_label}** — Low risk. Keep maintaining healthy work habits!")
+                    st.success(f"Burnout Level: **{pred_label}** - Low risk. Keep maintaining healthy work habits!")
 
                 # Feature 3: Confidence Gauge using progress bars
                 st.markdown("#### Prediction Confidence")
@@ -397,13 +524,13 @@ with tabs[4]:
                 medium_p = proba_dict.get('Medium', 0)
                 high_p   = proba_dict.get('High', 0)
                 with prob_col1:
-                    st.metric("🟢 Low", f"{low_p*100:.1f}%")
+                    st.metric("Low", f"{low_p*100:.1f}%")
                     st.progress(float(low_p))
                 with prob_col2:
-                    st.metric("🟡 Medium", f"{medium_p*100:.1f}%")
+                    st.metric("Medium", f"{medium_p*100:.1f}%")
                     st.progress(float(medium_p))
                 with prob_col3:
-                    st.metric("🔴 High", f"{high_p*100:.1f}%")
+                    st.metric("High", f"{high_p*100:.1f}%")
                     st.progress(float(high_p))
 
                 # Feature 1: Log to history
@@ -413,13 +540,18 @@ with tabs[4]:
                 })
 
             except Exception as e:
-                st.error(f"❌ Prediction failed: {e}")
+                st.error(f"Prediction failed: {e}")
 
 # -----------------------------
 # Feature 1: Prediction History Tab
 # -----------------------------
 with tabs[5]:
-    st.subheader("📋 Prediction History")
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Prediction History</h2>
+        <p>Review the prediction results created during the current session.</p>
+    </div>
+    """, unsafe_allow_html=True)
     st.caption("All predictions made during this session are recorded here.")
 
     if not st.session_state.history:
@@ -439,7 +571,7 @@ with tabs[5]:
 
         # Feature 2: Clear history button
         st.write("")
-        if st.button("🗑️ Clear Prediction History"):
+        if st.button("Clear Prediction History"):
             st.session_state.history = []
             st.rerun()
 
@@ -447,6 +579,12 @@ with tabs[5]:
 # Blog / Insights Tab
 # -----------------------------
 with tabs[6]:
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Insights</h2>
+        <p>Reserved space for model notes, limitations, and future dataset exploration.</p>
+    </div>
+    """, unsafe_allow_html=True)
     st.info("""
     This section will include:
     - Detailed explanation of each ML model
@@ -459,8 +597,13 @@ with tabs[6]:
 # Models Tab
 # -----------------------------
 with tabs[7]:
-    st.title("Code of Trained Models ( Jupyter Notebook )")
-    st.info("This Tab is specifically designed to display the Jupyter Notebook containing the code for training the models.")
+    st.markdown("""
+    <div class="section-lead">
+        <h2>Model Notebook</h2>
+        <p>View the Jupyter notebook used for model training.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    st.info("This tab displays the Jupyter Notebook containing the code for training the models.")
 
     notebook_path = "Heart_disease_model.ipynb"
     with open(notebook_path, "r", encoding="utf-8") as f:
@@ -476,5 +619,5 @@ with tabs[7]:
 # -----------------------------
 st.markdown("""
 <hr style="border: 1px solid #ddd;">
-<p style="text-align:center;">🌐 Designed and Developed by <b>Japanjot Singh</b></p>
+<p style="text-align:center;">Designed and developed by <b>Japanjot Singh</b></p>
 """, unsafe_allow_html=True)
