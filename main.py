@@ -13,11 +13,8 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Feature 5: Dark / Light Mode Toggle via CSS
+# Permanent Dark Theme via CSS
 # -----------------------------
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = False
-
 base_css = """
 <style>
     :root {
@@ -126,7 +123,6 @@ dark_css = """
     }
 </style>
 """
-light_css = "<style></style>"
 hide_st_style = """
 <style>
 footer {visibility: hidden;}
@@ -135,7 +131,7 @@ header {visibility: hidden;}
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 st.markdown(base_css, unsafe_allow_html=True)
-st.markdown(dark_css if st.session_state.dark_mode else light_css, unsafe_allow_html=True)
+st.markdown(dark_css, unsafe_allow_html=True)
 
 # -----------------------------
 # Load Trained Models
@@ -154,9 +150,9 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # -----------------------------
-# Header Row: Title + Dark Mode Toggle
+# Header Row: Title
 # -----------------------------
-title_col, toggle_col = st.columns([6, 1])
+title_col = st.container()
 with title_col:
     st.markdown("""
     <div class="app-hero">
@@ -166,13 +162,6 @@ with title_col:
     </div>
     """, unsafe_allow_html=True)
     st.caption("Project under development. Results are informational and should not replace professional medical advice.")
-with toggle_col:
-    st.write("")
-    st.write("")
-    toggle_label = "Dark mode" if not st.session_state.dark_mode else "Light mode"
-    if st.button(toggle_label):
-        st.session_state.dark_mode = not st.session_state.dark_mode
-        st.rerun()
 
 # -----------------------------
 # Navigation Tabs
@@ -212,7 +201,7 @@ with tabs[0]:
     - Backend powered by pre-trained supervised ML models
     - Designed for Streamlit Cloud deployment
     - Prediction history tracking across the session
-    - Dark and light mode support
+    - Permanent dark theme support
     - Designed and developed by *Japanjot Singh*
     """)
 
