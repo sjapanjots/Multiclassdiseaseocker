@@ -188,7 +188,7 @@ with tabs[0]:
     - Designed and developed by *Japanjot Singh*
     """)
 
-    # Quick stats from history
+    
     if st.session_state.history:
         st.markdown("### Session Stats")
         sc1, sc2, sc3, sc4 = st.columns(4)
@@ -262,7 +262,7 @@ with tabs[1]:
                         st.success('Prediction result: diabetic.')
                     else:
                         st.success('Prediction result: not diabetic.')
-                    # Feature 1: Log to history
+                    
                     st.session_state.history.append({
                         "Disease": "Diabetes", "Result": result,
                         "Inputs": f"Glucose={Glucose}, BMI={BMI}, Age={Age}"
