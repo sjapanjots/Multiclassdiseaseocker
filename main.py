@@ -162,14 +162,11 @@ tabs = st.tabs([
     "Models"
 ])
 
-# -----------------------------
-# About Project
-# -----------------------------
 with tabs[0]:
     st.markdown("""
     <div class="section-lead">
         <h2>Project Overview</h2>
-        <p>A compact Streamlit dashboard for exploring multiple trained prediction models.</p>
+        <p>A compact Streamlit Prototype using for backend in Kiosk and smart veding systems using trained prediction models.</p>
     </div>
     """, unsafe_allow_html=True)
     st.write("""
