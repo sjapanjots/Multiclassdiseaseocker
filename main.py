@@ -12,9 +12,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# -----------------------------
-# Permanent Dark Theme via CSS
-# -----------------------------
 base_css = """
 <style>
     :root {
