@@ -173,7 +173,7 @@ with tabs[0]:
     A compact Streamlit-based prototype developed for backend integration in smart
     kiosks and intelligent vending systems, leveraging trained machine learning prediction
     models for automated preliminary health analysis and disease prediction. The system is 
-    designed to simulate real-time AI-assisted healthcare interactions where users can input
+    designed to simulate real-time ML healthcare interactions where users can input
     symptoms or medical parameters and receive predictive insights instantly through an
     interactive interface.
     """)
