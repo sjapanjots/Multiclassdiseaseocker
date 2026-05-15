@@ -145,7 +145,7 @@ with title_col:
     st.markdown("""
     <div class="app-hero">
         <div class="app-kicker">Machine learning assistant</div>
-        <h1>AI Health Prediction Dashboard</h1>
+        <h1>ML Health Prediction Prototype Dashboard</h1>
         <p>Run quick prediction checks for diabetes, heart disease, Parkinson's disease, and employee burnout from one focused workspace.</p>
     </div>
     """, unsafe_allow_html=True)
