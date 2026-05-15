@@ -170,11 +170,12 @@ with tabs[0]:
     </div>
     """, unsafe_allow_html=True)
     st.write("""
-    This web application predicts the likelihood of **Diabetes**, **Heart Disease**, **Parkinson's Disease**,
-    and **Employee Burnout** using pre-trained Machine Learning models.
-    The system demonstrates how AI can assist healthcare professionals by providing early predictions
-    based on medical parameters.
-    However, these predictions are **not diagnostic** and should not replace medical advice.
+    A compact Streamlit-based prototype developed for backend integration in smart
+    kiosks and intelligent vending systems, leveraging trained machine learning prediction
+    models for automated preliminary health analysis and disease prediction. The system is 
+    designed to simulate real-time AI-assisted healthcare interactions where users can input
+    symptoms or medical parameters and receive predictive insights instantly through an
+    interactive interface.
     """)
     st.markdown("""
     ### Project Highlights
