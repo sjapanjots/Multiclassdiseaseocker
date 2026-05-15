@@ -149,7 +149,7 @@ with title_col:
         <p>Run quick prediction checks for diabetes, heart disease, Parkinson's disease, and employee burnout from one focused workspace.</p>
     </div>
     """, unsafe_allow_html=True)
-    st.caption("Project under development. Results are informational and should not replace professional medical advice.")
+    st.caption("Prototyping project and Inspired by the JD Health , WeDoctor , Alibaba Health , Tencent Healthcare .")
 
 tabs = st.tabs([
     "About",
