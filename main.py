@@ -198,9 +198,6 @@ with tabs[0]:
         sc3.metric("Heart Checks",      sum(1 for h in st.session_state.history if h["Disease"] == "Heart Disease"))
         sc4.metric("Burnout Checks",    sum(1 for h in st.session_state.history if h["Disease"] == "Burnout"))
 
-# -----------------------------
-# Diabetes Prediction Tab
-# -----------------------------
 with tabs[1]:
     st.markdown("""
     <div class="section-lead">
@@ -208,7 +205,7 @@ with tabs[1]:
         <p>Enter common diagnostic measurements, then run the trained diabetes model.</p>
     </div>
     """, unsafe_allow_html=True)
-    # Feature 4: BMI Calculator Helper
+    
     with st.expander("BMI Calculator - calculate BMI before filling the form"):
         bmi_col1, bmi_col2, bmi_col3 = st.columns(3)
         with bmi_col1:
@@ -248,7 +245,7 @@ with tabs[1]:
     with col2:
         Age = st.text_input('Age (21–81)')
 
-    # Feature 2: Reset button
+
     btn_col1, btn_col2 = st.columns([1, 5])
     with btn_col1:
         if st.button('Predict Diabetes'):
@@ -273,9 +270,6 @@ with tabs[1]:
             except ValueError:
                 st.error("Please enter valid numeric values only.")
 
-# -----------------------------
-# Heart Disease Prediction Tab
-# -----------------------------
 with tabs[2]:
     st.markdown("""
     <div class="section-lead">
@@ -325,7 +319,7 @@ with tabs[2]:
                     st.success('Prediction result: heart disease indicated.')
                 else:
                     st.success('Prediction result: no heart disease indicated.')
-                # Feature 1: Log to history
+                
                 st.session_state.history.append({
                     "Disease": "Heart Disease", "Result": result,
                     "Inputs": f"Age={age}, Chol={chol}, MaxHR={thalach}"
@@ -333,9 +327,6 @@ with tabs[2]:
         except ValueError:
             st.error("Please enter valid numeric values only.")
 
-# -----------------------------
-# Parkinson's Prediction Tab
-# -----------------------------
 with tabs[3]:
     st.markdown("""
     <div class="section-lead">
@@ -388,7 +379,7 @@ with tabs[3]:
                     st.success("Prediction result: Parkinson's disease indicated.")
                 else:
                     st.success("Prediction result: no Parkinson's disease indicated.")
-                # Feature 1: Log to history
+                
                 st.session_state.history.append({
                     "Disease": "Parkinson's", "Result": result,
                     "Inputs": f"Fo={fo}, HNR={HNR}, PPE={PPE}"
@@ -396,9 +387,6 @@ with tabs[3]:
         except ValueError:
             st.error("Please enter valid numeric values only.")
 
-# -----------------------------
-# Burnout Prediction Tab
-# -----------------------------
 with tabs[4]:
     st.markdown("""
     <div class="section-lead">
@@ -489,7 +477,7 @@ with tabs[4]:
                 else:
                     st.success(f"Burnout Level: **{pred_label}** - Low risk. Keep maintaining healthy work habits!")
 
-                # Feature 3: Confidence Gauge using progress bars
+                
                 st.markdown("#### Prediction Confidence")
                 prob_col1, prob_col2, prob_col3 = st.columns(3)
                 low_p    = proba_dict.get('Low', 0)
@@ -505,7 +493,7 @@ with tabs[4]:
                     st.metric("High", f"{high_p*100:.1f}%")
                     st.progress(float(high_p))
 
-                # Feature 1: Log to history
+                
                 st.session_state.history.append({
                     "Disease": "Burnout", "Result": pred_label,
                     "Inputs": f"Stress={b_stress_level}, WorkHrs={b_work_hours_per_week}, Sleep={b_sleep_hours}"
@@ -514,9 +502,6 @@ with tabs[4]:
             except Exception as e:
                 st.error(f"Prediction failed: {e}")
 
-# -----------------------------
-# Feature 1: Prediction History Tab
-# -----------------------------
 with tabs[5]:
     st.markdown("""
     <div class="section-lead">
@@ -534,22 +519,19 @@ with tabs[5]:
         history_df.index.name = "#"
         st.dataframe(history_df, use_container_width=True)
 
-        # Summary counts
+        
         st.markdown("#### Summary")
         sum_cols = st.columns(len(history_df["Disease"].unique()))
         for i, disease in enumerate(history_df["Disease"].unique()):
             count = len(history_df[history_df["Disease"] == disease])
             sum_cols[i].metric(disease, f"{count} prediction{'s' if count > 1 else ''}")
 
-        # Feature 2: Clear history button
+        
         st.write("")
         if st.button("Clear Prediction History"):
             st.session_state.history = []
             st.rerun()
 
-# -----------------------------
-# Blog / Insights Tab
-# -----------------------------
 with tabs[6]:
     st.markdown("""
     <div class="section-lead">
@@ -565,9 +547,6 @@ with tabs[6]:
     - Research references and external resources
     """)
 
-# -----------------------------
-# Models Tab
-# -----------------------------
 with tabs[7]:
     st.markdown("""
     <div class="section-lead">
@@ -586,9 +565,6 @@ with tabs[7]:
     html_data, _ = html_exporter.from_notebook_node(notebook_content)
     components.html(html_data, height=800, scrolling=True)
 
-# -----------------------------
-# Footer
-# -----------------------------
 st.markdown("""
 <hr style="border: 1px solid #ddd;">
 <p style="text-align:center;">Designed and developed by <b>Japanjot Singh</b></p>
