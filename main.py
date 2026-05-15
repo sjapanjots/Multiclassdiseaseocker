@@ -6,7 +6,7 @@ from nbconvert import HTMLExporter
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="AI Health Prediction Dashboard",
+    page_title="Health Prediction using Machine Learning ",
     page_icon=":material/health_and_safety:",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -137,15 +137,9 @@ burnout_model         = pickle.load(open('burnout_model.sav', 'rb'))
 burnout_preprocessing = pickle.load(open('burnout_preprocessing.sav', 'rb'))
 burnout_label_encoder = pickle.load(open('burnout_label_encoder.sav', 'rb'))
 
-# -----------------------------
-# Feature 1: Session State — Prediction History
-# -----------------------------
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# -----------------------------
-# Header Row: Title
-# -----------------------------
 title_col = st.container()
 with title_col:
     st.markdown("""
@@ -157,9 +151,6 @@ with title_col:
     """, unsafe_allow_html=True)
     st.caption("Project under development. Results are informational and should not replace professional medical advice.")
 
-# -----------------------------
-# Navigation Tabs
-# -----------------------------
 tabs = st.tabs([
     "About",
     "Diabetes",
